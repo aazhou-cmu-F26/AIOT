@@ -1,0 +1,14 @@
+.git
+.gitignore
+.DS_Store
+prompt.md
+evaluator
+results
+workspaces
+docs/TARGET_SELECTION.md
+docs/IMPLEMENTATION_REPORT.md
+docs/ACCEPTANCE_CHECKLIST.md
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+*.pdf

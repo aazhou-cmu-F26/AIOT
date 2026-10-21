@@ -1,0 +1,145 @@
+name: libcoap-stage1
+
+x-lab-security: &lab-security
+  read_only: true
+  init: true
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  mem_limit: 512m
+  cpus: 1.0
+  pids_limit: 256
+  restart: "no"
+
+services:
+  target-blackbox:
+    profiles: ["blackbox"]
+    image: libcoap-stage1-target:v4.3.5
+    build: &target-build
+      context: .
+      dockerfile: docker/target.Dockerfile
+      args:
+        UBUNTU_DIGEST: sha256:68ee22004a9109b44973313b02ff7b1de250f1de0f5ecb628d73f579aaff33ac
+        LIBCOAP_COMMIT: 7cf7465b784baded4de183290c547d582becfd28
+        LIBCOAP_TAG: v4.3.5
+    <<: *lab-security
+    user: "1000:1000"
+    hostname: target
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    networks:
+      blackbox_net:
+        aliases:
+          - target
+    expose:
+      - "5683/udp"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "coap-client -m get -s 3 coap://127.0.0.1/.well-known/core || coap-client-notls -m get -s 3 coap://127.0.0.1/.well-known/core",
+        ]
+      interval: 5s
+      timeout: 4s
+      retries: 12
+      start_period: 5s
+
+  target-whitebox:
+    profiles: ["whitebox"]
+    image: libcoap-stage1-target:v4.3.5
+    build: *target-build
+    <<: *lab-security
+    user: "1000:1000"
+    hostname: target
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    networks:
+      whitebox_net:
+        aliases:
+          - target
+    expose:
+      - "5683/udp"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "coap-client -m get -s 3 coap://127.0.0.1/.well-known/core || coap-client-notls -m get -s 3 coap://127.0.0.1/.well-known/core",
+        ]
+      interval: 5s
+      timeout: 4s
+      retries: 12
+      start_period: 5s
+
+  blackbox:
+    profiles: ["blackbox"]
+    image: libcoap-stage1-blackbox:v4.3.5
+    build:
+      context: .
+      dockerfile: docker/blackbox.Dockerfile
+      args:
+        UBUNTU_DIGEST: sha256:68ee22004a9109b44973313b02ff7b1de250f1de0f5ecb628d73f579aaff33ac
+        LIBCOAP_COMMIT: 7cf7465b784baded4de183290c547d582becfd28
+        LIBCOAP_TAG: v4.3.5
+    <<: *lab-security
+    user: "1000:1000"
+    hostname: blackbox
+    working_dir: /workspace
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+      - /home/analyst:size=32m,mode=1777
+    volumes:
+      - ./results/blackbox:/workspace/results
+      - ./workspaces/blackbox/scratch:/workspace/scratch
+    environment:
+      COAP_HOST: target
+      COAP_PORT: "5683"
+      LAB_VIEWPOINT: black-box
+      LAB_TOOLS: /opt/lab/tools
+    networks:
+      - blackbox_net
+    depends_on:
+      target-blackbox:
+        condition: service_healthy
+
+  whitebox:
+    profiles: ["whitebox"]
+    image: libcoap-stage1-whitebox:v4.3.5
+    build:
+      context: .
+      dockerfile: docker/whitebox.Dockerfile
+      args:
+        UBUNTU_DIGEST: sha256:68ee22004a9109b44973313b02ff7b1de250f1de0f5ecb628d73f579aaff33ac
+        LIBCOAP_COMMIT: 7cf7465b784baded4de183290c547d582becfd28
+        LIBCOAP_TAG: v4.3.5
+    <<: *lab-security
+    user: "1000:1000"
+    hostname: whitebox
+    working_dir: /workspace
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    mem_limit: 2g
+    pids_limit: 512
+    volumes:
+      - ./results/whitebox:/workspace/results
+      - ./workspaces/whitebox/scratch:/workspace/scratch
+    environment:
+      COAP_HOST: target
+      COAP_PORT: "5683"
+      LAB_VIEWPOINT: white-box
+      LAB_TOOLS: /opt/lab/tools
+      LIBCOAP_SRC: /home/analyst/src/libcoap
+      BUILD_DIR: /workspace/scratch/wb-build
+    networks:
+      - whitebox_net
+    depends_on:
+      target-whitebox:
+        condition: service_healthy
+
+networks:
+  blackbox_net:
+    internal: true
+    driver: bridge
+  whitebox_net:
+    internal: true
+    driver: bridge

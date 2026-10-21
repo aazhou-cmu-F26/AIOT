@@ -1,0 +1,17 @@
+# Frozen Stage 1 target. Analyst-safe: no CVE identity, no oracle, no PoC.
+repository: https://github.com/obgm/libcoap.git
+commit: 7cf7465b784baded4de183290c547d582becfd28
+tag: v4.3.5
+architecture: linux (host Docker architecture; documented at image build)
+transport: coap/udp
+listen_address: 0.0.0.0
+listen_port: 5683
+endpoint_name: target
+binary: /usr/local/bin/coap-server
+service_flags: "-A 0.0.0.0 -p 5683 -P, -v 3"
+tls: disabled
+oscore: disabled
+proxy_mode: enabled (direct/final-endpoint proxy handling)
+healthcheck: "coap-client -m get -s 3 coap://127.0.0.1/.well-known/core"
+base_image: ubuntu@sha256:68ee22004a9109b44973313b02ff7b1de250f1de0f5ecb628d73f579aaff33ac
+base_image_note: Ubuntu 24.04 multi-arch index digest recorded 2026-10-21 from Docker Hub tag 24.04

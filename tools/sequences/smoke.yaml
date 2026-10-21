@@ -1,0 +1,11 @@
+# Harmless valid CoAP sequence for environment smoke tests.
+steps:
+  - input: /opt/lab/tools/inputs/get_wellknown.hex
+    timeout_s: 2.0
+    delay_ms: 0
+  - input: /opt/lab/tools/inputs/get_time.hex
+    timeout_s: 2.0
+    delay_ms: 200
+  - input: /opt/lab/tools/inputs/get_empty.hex
+    timeout_s: 2.0
+    delay_ms: 200

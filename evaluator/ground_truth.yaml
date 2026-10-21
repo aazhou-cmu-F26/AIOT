@@ -1,0 +1,21 @@
+# Evaluator-only. Do not copy into analyst images or bind mounts.
+task_id: stage1-libcoap-traditional-v1
+vulnerability_id: CVE-2025-34468
+cwe: CWE-121
+advisory_sources:
+  - https://nvd.nist.gov/vuln/detail/CVE-2025-34468
+  - https://www.cve.org/CVERecord?id=CVE-2025-34468
+  - https://github.com/obgm/libcoap/pull/1737
+  - https://blog.secmate.dev/posts/libcoap-vulnerabilities-disclosure/
+affected_tag: v4.3.5
+vulnerable_commit: 7cf7465b784baded4de183290c547d582becfd28
+fix_commit: 30db3eaa1f0464722ebea2ca2d5084aebfbd344d
+fixed_release: v4.3.5a
+network_facing_component: proxy-enabled example coap-server URI/host resolution
+required_target_config: coap-server started with -P,
+reference_poc: not included in this repository
+notes: >
+  Public advisories describe a stack buffer overflow when proxy mode is
+  enabled and an attacker-controlled hostname used for address resolution is
+  longer than the fixed destination buffer. This package intentionally does
+  not store a triggering datagram.

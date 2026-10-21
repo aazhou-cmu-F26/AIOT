@@ -1,0 +1,14 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.pytest_cache/
+results/run-*/
+results/blackbox/*
+results/whitebox/*
+results/acceptance/*
+!results/blackbox/.gitkeep
+!results/whitebox/.gitkeep
+!results/acceptance/.gitkeep
+workspaces/blackbox/scratch/
+workspaces/whitebox/scratch/
+*.log

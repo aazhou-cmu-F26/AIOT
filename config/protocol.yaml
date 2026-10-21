@@ -1,0 +1,51 @@
+protocol_id: stage1-libcoap-traditional-v1
+task: Traditional vulnerability investigation of a frozen libcoap CoAP/UDP service
+transport: udp
+scheme: coap
+endpoint: target:5683
+public_contract:
+  - RFC 7252 message format and basic request/response handling
+  - RFC 7252 option encoding, including proxy-related options if present
+  - Observable replies, timeouts, and subsequent service health
+threat_model:
+  attacker_controls:
+    - UDP datagram bytes
+    - packet sequences
+    - inter-packet delay and per-packet timeout
+    - source UDP endpoint as assigned by the lab network
+  in_scope:
+    - protocol parsing and request handling of the frozen coap-server
+    - memory safety and availability of the target process
+  out_of_scope:
+    - DTLS, OSCORE, WebSockets, and physical-layer attacks
+    - attacks against Docker, the host, or other containers
+    - using evaluator-only files or unpublished matching rules
+budgets:
+  default_packet_timeout_s: 2
+  sequence_max_packets: 16
+  recommended_run_wallclock_min: 90
+stopping_rules:
+  - Record a candidate when a saved input has a concrete observation.
+  - Stop when the run budget is reached, even if no candidate is validated.
+validation_contract_public:
+  evidence_types:
+    - independently replayable external timeout, reset, or unexpected reply
+    - independently replayable service unavailability after a saved input
+    - white-box sanitizer or debugger evidence from a permitted instrumented replica
+  insufficient_alone:
+    - a single timeout without a health-check follow-up
+    - a fuzzer crash without an independently replayed saved input
+  hidden_oracle: retained by the evaluator only
+viewpoints:
+  black-box:
+    network: true
+    source: false
+    debugger: false
+    sanitizer_output: false
+    evaluator_files: false
+  white-box:
+    network: true
+    source: approved-revision-only
+    debugger: true
+    sanitizer_output: true
+    evaluator_files: false
