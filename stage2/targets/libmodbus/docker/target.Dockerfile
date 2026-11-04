@@ -64,9 +64,10 @@ ENV LD_LIBRARY_PATH=/usr/local/lib
 RUN mkdir -p /opt/lab /workspace/results \
     && chown -R 1000:1000 /opt/lab /workspace
 COPY --chown=1000:1000 harness/modbus_client.py /opt/lab/modbus_client.py
+COPY --chown=1000:1000 harness/modbus_fuzz.py /opt/lab/modbus_fuzz.py
 COPY --chown=1000:1000 harness/inputs/ /opt/lab/inputs/
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod 755 /usr/local/bin/entrypoint.sh /opt/lab/modbus_client.py
+RUN chmod 755 /usr/local/bin/entrypoint.sh /opt/lab/modbus_client.py /opt/lab/modbus_fuzz.py
 
 ENV PATH="/usr/local/bin:${PATH}"
 ENV PYTHONDONTWRITEBYTECODE=1
