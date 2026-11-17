@@ -689,7 +689,7 @@ buildMatrix('tab-all', DATA.all, DATA.conditions);
 const lbConds = ['C0', 'C1', 'C2', 'Triage', 'Input'];
 buildMatrix('tab-libcoap', DATA.libcoap, lbConds);
 
-const lmConds = ['C0', 'Triage'];
+const lmConds = ['C0', 'C1', 'C2', 'Triage', 'Input'];
 buildMatrix('tab-libmodbus', DATA.libmodbus, lmConds);
 
 buildMatrix('tab-mongoose', DATA.mongoose, DATA.conditions);
