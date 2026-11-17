@@ -59,3 +59,11 @@ timestamp_utc,run_id,task_id,status,model_requested,model_resolved,attempts,prom
 2026-11-04T08:30:48Z,run-053,libmodbus-0367-source-review,candidate,deepseek/deepseek-chat-v3.1,deepseek/deepseek-chat-v3.1,1,22748,1251,23999,0.00687161
 2026-11-04T08:31:11Z,run-054,libmodbus-0367-source-review,candidate,deepseek/deepseek-chat-v3.1,deepseek/deepseek-chat-v3.1,1,22748,1058,23806,0.00396954
 2026-11-04T08:31:25Z,run-055,libmodbus-0367-source-review,candidate,deepseek/deepseek-chat-v3.1,deepseek/deepseek-chat-v3.1,1,22748,1137,23885,0.00404459
+2026-11-17T03:36:09Z,run-056,libmodbus-0367-source-review,candidate,openai/gpt-5.6-sol,openai/gpt-5.6-sol,1,21504,3176,24680,0.171037
+2026-11-17T03:36:57Z,run-057,libmodbus-0367-source-review,candidate,openai/gpt-5.6-sol,openai/gpt-5.6-sol,1,21504,3122,24626,0.0710524
+2026-11-17T03:37:43Z,run-058,libmodbus-0367-source-review,candidate,openai/gpt-5.6-sol,openai/gpt-5.6-sol,1,21504,2968,24472,0.0679724
+2026-11-17T03:38:10Z,run-059,libmodbus-0367-source-review,candidate,openai/gpt-6.1-sol,openai/gpt-6.1-sol,1,21504,701,22205,0.0607685
+2026-11-17T03:38:37Z,run-060,libmodbus-0367-source-review,candidate,openai/gpt-6.1-sol,openai/gpt-6.1-sol,1,21504,938,22442,0.0115361
+2026-11-17T03:39:01Z,run-061,libmodbus-0367-source-review,candidate,openai/gpt-6.1-sol,openai/gpt-6.1-sol,1,21504,684,22188,0.0089961
+2026-11-17T08:28:15.908482+00:00,OLLAMA-TRIAGE-deepseek-coder-6.7b,libmodbus-ollama-triage,ok,deepseek-coder:6.7b,deepseek-coder:6.7b,1,1517,133,1650,0
+2026-11-17T08:28:25.228052+00:00,OLLAMA-TRIAGE-qwen2.5-coder-7b,libmodbus-ollama-triage,ok,qwen2.5-coder:7b,qwen2.5-coder:7b,1,1005,175,1180,0
