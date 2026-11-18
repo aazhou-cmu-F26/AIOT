@@ -16,11 +16,19 @@ DEFAULT_BASE_URL = "http://localhost:11434/v1"
 
 
 class OllamaClient:
-    """One chat-completion call per ``complete``; no retries, no tools."""
+    """One chat-completion call per ``complete``; no retries, no tools.
 
-    def __init__(self, base_url: str = DEFAULT_BASE_URL, timeout_s: float = 600.0):
+    Issue D6: Ollama's OpenAI-compatible endpoint defaults num_ctx to ~2048,
+    which silently truncates the longer triage/agentic prompts. ``num_ctx`` is
+    now set explicitly (default 16384) and forwarded via ``extra_body.options``;
+    callers should also log ``usage.prompt_tokens`` to confirm no truncation.
+    """
+
+    def __init__(self, base_url: str = DEFAULT_BASE_URL, timeout_s: float = 600.0,
+                 num_ctx: int = 16384):
         from openai import OpenAI
 
+        self._num_ctx = num_ctx
         self._client = OpenAI(
             base_url=base_url,
             api_key="ollama",
@@ -29,8 +37,13 @@ class OllamaClient:
         )
 
     def complete(self, model: str, messages: list[dict], sampling: dict) -> Completion:
+        sampling = dict(sampling)
+        # Allow a per-call override; otherwise use the client default (D6).
+        num_ctx = sampling.pop("num_ctx", self._num_ctx)
         resp = self._client.chat.completions.create(
-            model=model, messages=messages, **sampling
+            model=model, messages=messages,
+            extra_body={"options": {"num_ctx": num_ctx}},
+            **sampling,
         )
         choice = resp.choices[0] if resp.choices else None
         return Completion(

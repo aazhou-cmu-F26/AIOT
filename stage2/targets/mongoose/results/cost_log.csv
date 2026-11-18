@@ -53,3 +53,9 @@ timestamp_utc,run_id,task_id,status,model_requested,model_resolved,attempts,prom
 2026-11-17T08:27:34.010442+00:00,OLLAMA-TRIAGE-qwen2.5-coder-7b,mongoose-ollama-triage,ok,qwen2.5-coder:7b,qwen2.5-coder:7b,1,721,101,822,0
 2026-11-17T08:27:42.901994+00:00,OLLAMA-C0-deepseek-coder-6.7b,mongoose-ollama-c0,ok,deepseek-coder:6.7b,deepseek-coder:6.7b,1,3017,115,3132,0
 2026-11-17T08:27:51.666284+00:00,OLLAMA-C0-qwen2.5-coder-7b,mongoose-ollama-c0,ok,qwen2.5-coder:7b,qwen2.5-coder:7b,1,2113,103,2216,0
+2026-11-17T18:04:43.375444+00:00,OLLAMA-C2-deepseek-coder-6.7b,mongoose-ollama-c2,ok,deepseek-coder:6.7b,deepseek-coder:6.7b,1,3578,282,3860,0
+2026-11-17T18:04:53.260723+00:00,OLLAMA-C2-qwen2.5-coder-7b,mongoose-ollama-c2,ok,qwen2.5-coder:7b,qwen2.5-coder:7b,1,2605,134,2739,0
+2026-11-17T18:05:01.903102+00:00,OLLAMA-INPUT-deepseek-coder-6.7b,mongoose-ollama-input,ok,deepseek-coder:6.7b,deepseek-coder:6.7b,1,644,176,820,0
+2026-11-17T18:05:11.497576+00:00,OLLAMA-INPUT-qwen2.5-coder-7b,mongoose-ollama-input,ok,qwen2.5-coder:7b,qwen2.5-coder:7b,1,484,182,666,0
+2026-11-17T18:20:51.498025+00:00,OLLAMA-C1-deepseek-coder-6.7b,mongoose-ollama-c1,api_error,deepseek-coder:6.7b,,1,0,0,0,0
+2026-11-17T18:23:39.234436+00:00,OLLAMA-C1-qwen2.5-coder-7b,mongoose-ollama-c1,turn_limit_reached,qwen2.5-coder:7b,qwen2.5-coder:7b,1,46710,6992,53702,0
