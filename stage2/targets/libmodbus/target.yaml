@@ -36,7 +36,7 @@ ground_truth:
   mechanism: >-
     The fn-0x17 (write_and_read_registers) handler computes both
     mapping_address and mapping_address_write, but its guard tests
-    `mapping_address < 0` twice (lines 963 and 964) and never tests
+    `mapping_address < 0` twice (lines 962 and 964) and never tests
     `mapping_address_write < 0`. A write address below start_registers makes
     mapping_address_write negative; the remaining upper-bound test passes, and
     the write loop stores through tab_registers[i] with negative i.

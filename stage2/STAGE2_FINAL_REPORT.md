@@ -94,8 +94,10 @@ consistency is held by files and tests.
    hints are banned.)
 5. **One scoring method.** Blind adjudication against a written per-CVE rubric
    (`targets/RUBRICS.md`), stored as data with a rationale — never keyword matching.
-   Input-drafting is scored **only** by a runtime oracle. Converters store the
-   model's words verbatim and assign no verdict.
+   The cheap, local and pass-1 runs were hand-read; the frontier models' first-pass
+   verdicts were assigned by a target-signature heuristic and spot-checked against
+   manual reads (§6). Input-drafting is scored **only** by a runtime oracle.
+   Converters store the model's words verbatim and assign no verdict.
 6. **One statistics convention.** The unit of analysis is the **run**; results are
    **any-of-k with k = 3** (and top-1); every cell gets a **Wilson 95 % interval**
    (plain-Python); non-comparable cells are never pooled.
@@ -176,13 +178,17 @@ three tool baselines were added. The rest of this report is the result.
 
 ### 4.1 Everything at once
 
-*(Figure — heatmap: any-of-3 accuracy by model × condition × target, one panel per
+*(Figure — heatmap: top-1 accuracy by model × condition × target, one panel per
 target; cell = correct/scored, darker = higher.)*
 
 Two things jump out of the heatmap, and the rest of this section unpacks them: the
-**libmodbus panel is uniformly dark** (it is the memorised target — §4.3), and the
-**agentic column is the palest** on the uncontaminated targets (navigating to a bug
-unaided is the hard part — §4.4). The two local 7B models trail everywhere.
+**libmodbus panel is dark across every condition, including agentic** (it is the one
+training-contaminated target — §4.3), and the **agentic column is the palest** on the
+two uncontaminated targets (navigating to a bug unaided is the hard part — §4.4). The
+two local 7B models trail everywhere. Note the contamination shows up specifically in
+the agentic cell: on one-shot, crash-given and triage the post-cutoff targets largely
+keep pace with libmodbus, so memorisation is not inflating every libmodbus cell
+uniformly (§4.3).
 
 ### 4.2 Corrected accuracy, with confidence intervals (all 11 models)
 
@@ -190,14 +196,23 @@ unaided is the hard part — §4.4). The two local 7B models trail everywhere.
 
 | target | C1 agentic | C0 one-shot | crash-given | triage |
 |---|---|---|---|---|
-| **libmodbus**¹ | 65 % [45,81] · 15/23 | 74 % [55,87] · 20/27 | 82 % [66,91] · 27/33 | 73 % [56,85] · 24/33 |
-| **libcoap** | **11 % [3,33]** · 2/18 | 63 % [44,78] · 17/27 | 81 % [64,91] · 25/31 | 90 % [74,97] · 27/30 |
-| **mongoose** | 50 % [28,72] · 8/16 | 76 % [57,89] · 19/25 | 80 % [63,90] · 24/30 | 73 % [56,85] · 24/33 |
+| **libmodbus**¹ | 74 % [54,87] · 17/23 | 74 % [55,87] · 20/27 | 82 % [66,91] · 27/33 | 64 % [47,78] · 21/33 |
+| **libcoap** | **11 % [3,31]** · 2/19 | 62 % [44,77] · 18/29 | 82 % [66,91] · 27/33 | 90 % [74,97] · 27/30 |
+| **mongoose** | 56 % [33,77] · 9/16 | 76 % [57,89] · 19/25 | 80 % [63,90] · 24/30 | 67 % [50,80] · 22/33 |
 
-¹ contaminated (§4.3). Given the code or a crash report, capable models localise
-the bug reliably: **crash-given and triage sit at 73–90 %** across all three
-targets, and even whole-file review is **63–76 %**. The one condition that stays
-hard is agentic navigation (§4.4). Cells are small; read the intervals.
+¹ contaminated (§4.3). (Percentages are over *scored* runs — all values in this
+table are the single top-1 verdict per run, not any-of-k.) Given the code or a crash
+report, capable models localise the bug reliably: **crash-given sits at 80–82 % and
+triage at 64–90 %** across all three targets, and even whole-file review is
+**62–76 %**. The one condition that stays hard is agentic navigation (§4.4). Cells
+are small; read the intervals.
+
+**Denominator note.** The percentages are over *scored* runs — those that returned a
+judgeable answer. Provider content-filtering removes a disproportionate share of
+agentic runs (§4.5), so the *over-all-runs* agentic rate is lower: libmodbus 52 %
+(17/33), libcoap 6 % (2/33), mongoose 27 % (9/33). Both denominators live in
+`verdicts.csv`: the scored-run rate measures reasoning when the model engages, the
+all-runs rate folds in refusals.
 
 ### 4.3 The contamination control — the result that reframes the rest
 
@@ -210,28 +225,32 @@ hard is agentic navigation (§4.4). Cells are small; read the intervals.
 | mongoose CVE-2026-52056 | 2026 | No |
 
 Several models also **hallucinated** plausible-looking CVE ids, a caution against
-trusting recalled identifiers. **Consequence:** libmodbus's numbers are a
-**memorisation-inflated upper bound**; the clean evidence of genuine capability
-comes from **libcoap and mongoose**, whose CVEs post-date every model's cutoff. The
-one target where models look strong across the whole row is the one they had read
-about.
+trusting recalled identifiers. **Consequence:** recall is a confound, so libmodbus is
+read as an **upper bound — not a demonstrated inflation**. Four models can name its
+2022 CVE from memory, so its cells *could* be answered partly from recall; the clean
+evidence of genuine capability therefore comes from **libcoap and mongoose**, whose
+CVEs post-date every model's cutoff. In practice the inflation is visible mainly in
+the agentic cell: on one-shot, crash-given and triage, mongoose and libcoap land
+close to libmodbus, so memorisation did not obviously lift those conditions.
 
 ### 4.4 The ladder: the more the prompt points the way, the better
 
 *(Figure — accuracy vs disclosure level, per target.)*
 
 This replaces the first pass's "agentic paradox." There is **no paradox — just a
-gradient**. On the uncontaminated targets, accuracy rises monotonically as the
-prompt reveals more:
+gradient**. On the uncontaminated targets, accuracy **broadly rises** as the prompt
+reveals more (not strictly monotonic — mongoose triage dips slightly below its
+one-shot cell):
 
 - **Agentic navigation (C1) is the hardest** — **libcoap 11 %** (only one model,
-  GPT-5, navigated a 96-file tree to the `memcpy`), **mongoose 50 %** (down from the
+  GPT-5, navigated a 96-file tree to the `memcpy`), **mongoose 56 %** (down from the
   old annotated **83 %** once the file-tree hint naming `skip_chunk` is removed).
-- **Whole-file review (one-shot) is easier** — 63–76 %. (Notably, the old "libcoap
+- **Whole-file review (one-shot) is easier** — 62–76 %. (Notably, the old "libcoap
   one-shot 0 %" was a *weak-model* artifact; with the strong models now in the cell
-  it is 63 %. Strong models do find the bug in the haystack — the haystack mostly
+  it is 62 %. Strong models do find the bug in the haystack — the haystack mostly
   defeats the weak ones.)
-- **Handing the model the excerpt or a crash report is easiest** — 73–90 %.
+- **Handing the model the excerpt or a crash report is easiest** — crash-given
+  80–82 %, triage 64–90 %.
 
 The old "C1 is worse than C0" was an artifact of a hint (mongoose), a wrong revision
 (libmodbus) and content-filtering — not a deep inversion of capability.
@@ -287,11 +306,13 @@ The linter catches exactly the one **classic-pattern** bug — a duplicated cond
 | naive seeds | 5/5 | 149, 180, 226, 250, 959 | 226 iters |
 | AI-drafted seeds | 5/5 | 7, 17, 38, 47, 105 | **38 iters** |
 
-AI seeding reaches the crash **~6× faster**. This **reverses** the first pass's
-single-trial claim that AI seeds "found nothing." Honest caveat: the AI corpus
-contains oracle-confirmed triggers, so part of the speedup is "a seed near the crash
-needs little mutation"; the naive arm still finds it (median 226), so the bug is
-shallow for a field-aware mutator either way.
+AI seeding reaches the crash **~6× faster**, which **reverses** the first pass's
+single-trial claim that AI seeds "found nothing." Read it as suggestive, not settled:
+the single fuzzed target is libmodbus — both training-contaminated and the one bug the
+linter already catches — and the AI corpus contains oracle-confirmed triggers, so part
+of the speedup is just "a seed near the crash needs little mutation." The naive arm
+still finds it (median 226), so the bug is shallow for a field-aware mutator either
+way. A clean seeding-advantage result would need the post-cutoff targets fuzzed too.
 
 ### 4.9 Old vs corrected — what the first pass got wrong, and why
 
@@ -302,7 +323,7 @@ shallow for a field-aware mutator either way.
 | libmodbus C0 | 19 % | 69 % | 74 % |
 | libmodbus crash | 100 % | 82 % | 82 % |
 | mongoose crash | 89 % | 80 % | 80 % |
-| mongoose C1 | 83 % | 83 % | **50 %** |
+| mongoose C1 | 83 % | 83 % | **56 %** |
 
 The 19 %→69 % and 100 %→82 % corrections come from **re-scoring the same old
 transcripts** with a correct rubric; the §4.2 table is **fresh runs** on the aligned
@@ -319,7 +340,7 @@ against the data, and was fixed with an enforcing artifact. (Full ledger:
 | Issue | How it was reproduced / verified | How it was corrected |
 |---|---|---|
 | **Wrong revision** — libmodbus agentic served fixed v3.1.10 | the runner built its store from a tree whose `modbus.c` already has the write-index check; the bug cannot be present | SHA-pinned `target.yaml` + `test_revision.py` proving the vulnerable commit loads; invalid runs quarantined under `_invalid/` |
-| **Leaked answers** — prompts named the mechanism/function | grepped every prompt: triage stated the flaw class; mongoose's tree annotated `skip_chunk` | de-hinted shared templates + `test_leak_boundary.py`; re-run; the annotation's removal alone drops mongoose C1 83%→50% |
+| **Leaked answers** — prompts named the mechanism/function | grepped every prompt: triage stated the flaw class; mongoose's tree annotated `skip_chunk` | de-hinted shared templates + `test_leak_boundary.py`; re-run; the annotation's removal alone drops mongoose C1 83%→56% |
 | **Broken scorer** — keyword matching over converter text | a refusal and three wrong hypotheses scored "correct"; "19%" pooled a different CVE and counted per-candidate | blind rubric → `verdicts.csv`, per run, with rationale; converters store raw text and assign no verdict |
 | **Contamination unmeasured** | recall probe: 4 models named the 2022 CVE from memory; 0 named the 2025/2026 ones | contamination reported as a first-class caveat; libmodbus read as an upper bound |
 | **Harness defects** — literal/quoted GREP, no forced FINAL | a model sent `GREP "modbus_reply"` 11× and got "no matches", then ran out of turns | regex+quote-stripped GREP, turns-remaining warning + forced FINAL, tolerant parse; `test_harness.py` |
@@ -351,17 +372,17 @@ away, and none changed a headline conclusion.
 
 With contamination controlled and the answer kept out of the prompt, current models
 **localise a memory-safety bug reliably when handed the right excerpt, a crash
-report, or even the whole file** (63–90 % on the post-cutoff targets), but **agentic
+report, or even the whole file** (62–90 % on the post-cutoff targets), but **agentic
 needle-in-a-haystack discovery is hard** (11 % on libcoap) and **turning a known bug
 into a working trigger is harder still** (9/33). A free static linter already
 catches the one classic-pattern bug — which is also the one the models had
 memorised.
 
 **The defensible claim is not "AI finds vulnerabilities," but: AI meaningfully
-assists a human who has already narrowed the search — as a triage reader and a
-fuzzing-seed generator — on exactly the semantic bugs that cheap tools miss**, with
-reliability still bounded by safety refusals, context limits, and how much the task
-points the way.
+assists a human who has already narrowed the search — as a triage reader on exactly
+the semantic bugs that cheap tools miss, and (on suggestive, single-target evidence)
+as a fuzzing-seed generator** — with reliability still bounded by safety refusals,
+context limits, and how much the task points the way.
 
 And methodologically, the value of this exercise was the **alignment itself**: three
 incomparable case studies, built by three people with three vocabularies, pulled

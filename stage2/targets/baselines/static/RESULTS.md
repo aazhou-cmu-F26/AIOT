@@ -26,11 +26,11 @@ Docker image; deferred to the Docker-harness step.
 
 ## Interpretation (vs the corrected AI results)
 
-| Target | static tool | AI best cell (corrected, any-of-3) | training-contaminated? |
+| Target | static tool | AI cells (corrected sweep, top-1) | training-contaminated? |
 |---|---|---|---|
-| libmodbus | **hit** | C1 agentic 67% | **yes** (CVE recalled by 4 models) |
-| libcoap | miss | triage 67%, crash 50%, C1 8% | no |
-| mongoose | miss | crash 50%, C0 45%, C1 30% | no |
+| libmodbus | **hit** | crash 82%, one-shot 74%, triage 64%, C1 agentic 74% | **yes** (CVE recalled by 4 models) |
+| libcoap | miss | triage 90%, crash 82%, one-shot 62%, C1 agentic 11% | no |
+| mongoose | miss | crash 80%, one-shot 76%, triage 67%, C1 agentic 56% | no |
 
 **The static tool catches exactly one of the three — the classic
 duplicated-condition pattern — and that one is also the training-contaminated
@@ -42,8 +42,8 @@ not pattern-matchable, and cppcheck flags neither. So the honest framing is:
   and the "AI finds it" result there is partly memorization.
 - The AI's distinctive value is on the **semantic, uncontaminated** bugs that the
   linter misses — and even there, agentic needle-in-a-haystack search is hard
-  (libcoap C1 = 8%), while giving the model the right excerpt works well
-  (libcoap triage = 67%).
+  (libcoap C1 = 11%), while giving the model the right excerpt works well
+  (libcoap triage = 90%).
 
 This is a baseline comparison, not a head-to-head score: cppcheck reports a
 *location-level lint*, not a ranked exploit hypothesis, so "hit/miss on the

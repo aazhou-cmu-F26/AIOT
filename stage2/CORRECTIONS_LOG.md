@@ -322,9 +322,35 @@ speedup is "a seed near the crash needs little mutation." See
   fuzzing ≥5 seeds/arm). Phase 3.
 - **Phase 3 sweeps** — gated on budget approval (see run matrix below).
 
+### Trim pass ✅ (post-verification, no spend — scorer + report only)
+After an independent read-only verification, a trim pass adjusted framing and a few
+data cells without re-running any model sweep, Docker, or test-as-requirement:
+- **Frontier-verdict heuristic disclosed.** The cheap, local and pass-1 runs were
+  hand-read; the **frontier** models' first-pass crash/triage/one-shot/C1 verdicts
+  were assigned by a target-signature substring heuristic in
+  `write_verdicts_sweep.py` and spot-checked against manual reads. This is now
+  stated in both reports (§2 scoring, §6 limitations) rather than implied to be the
+  same blind hand-adjudication as the rest.
+- **Verifier cell corrections applied** as second-rater overrides (`OVERRIDE` in
+  `write_verdicts_sweep.py`): 15 cells re-read against `RUBRICS.md`, including
+  libmodbus triage (→ 21/33 = 64%) and source-agentic (→ 17/23 = 74%), and the
+  mongoose grok-4.6 agentic cell (→ 9/16 = 56%). `verdicts.csv` regenerated.
+- **Oracle reconciled into `verdicts.csv`.** The libmodbus input-drafting oracle
+  results (`harness/oracle_results.json`, 9 pass / 33 scored) are now baked into the
+  `oracle_verdict` column and the report counts them from the CSV, not a hardcoded
+  literal.
+- **Stale numbers corrected:** mongoose C1 50%→56% (post-override), the §4.2 ranges,
+  `baselines/static/RESULTS.md`'s pre-sweep AI cells, and the `target.yaml` mechanism
+  line reference (the two identical `mapping_address < 0` guards are at **962 and
+  964**, not 963 and 964). "any-of-3" relabelled to "top-1" throughout (the stored
+  `anyofk_verdict` equals the single top-1 verdict).
+- **Framing softened** where the data is thinner than the prose: contamination read
+  as a confound/upper-bound rather than demonstrated inflation (post-cutoff targets
+  keep pace with libmodbus except on agentic); the hinting gradient "broadly rises"
+  rather than "monotonic"; the fuzzing ~6× result marked suggestive (single
+  contaminated target, trigger-seeded corpus).
+
 ## Spend ledger
-| Checkpoint | Paid spend (USD) |
-|---|---|
-| Baseline (start of corrections) | 17.4761 |
-| New spend this pass | 0.0000 |
-| Proposed Phase-3 sweeps (default scope, awaiting approval) | ~4.73 (over-estimate) |
+API/compute cost figures are intentionally omitted from this report pass and will be
+reinstated separately; no paid spend was incurred in the re-adjudication, trim, or
+reporting passes.
