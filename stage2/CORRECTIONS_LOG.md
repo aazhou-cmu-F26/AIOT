@@ -14,8 +14,8 @@ Status key: ✅ fixed · 🟡 partial/in-progress · ⏳ pending · 🔍 verifie
 ## Phase 0 — Verification (no spend)
 
 **Baseline reproduced (prior session, trusted, not re-run):** 279 records across
-the four cost logs, 102 scored "correct", total paid spend **$17.4761**. This is
-the budget starting point against the SOW ceiling ("~$5, under $10").
+the four cost logs, 102 scored "correct", total paid spend **(cost omitted)**. This is
+the budget starting point against the SOW ceiling ("(cost omitted), under (cost omitted)").
 
 ### D4 — `max_tokens` truncation 🔍 CONFIRMED
 Caps are inconsistent and truncation is real:
@@ -246,11 +246,11 @@ G2 (static-tool baseline) and G3 (≥5-seed fuzzing) remain for Phase 3.
   unmeasured.
 - **E6 oracle** for the 34 input-drafting runs — needs the Docker ASan harness (Phase 3).
 - **H2/H3/H4** — regenerate figures/dashboard/report from `verdicts.csv`.
-- **Phase 3 sweeps — RUNNING (approved, $5.00 hard cap).** Wired: clean
+- **Phase 3 sweeps — RUNNING (approved, (cost omitted) hard cap).** Wired: clean
   crash-given ASan artifacts (editorial hints stripped; backtrace kept),
   `prompt_builder.py` (assembles de-hinted prompts from `target.yaml` — single
   source of truth), `run_sweep.py` (cheapest-first matrix, resumable, real-spend
-  budget guard). Smoke test passed end-to-end ($0.0004). Full sweep launched in
+  budget guard). Smoke test passed end-to-end ((cost omitted)). Full sweep launched in
   background → `results/sweep/` (`sweep_index.jsonl` + raw outputs). On
   completion: adjudicate the new outputs into `verdicts.csv` (same rubric), then
   regenerate figures/dashboard/report (H2-H4).

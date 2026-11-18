@@ -35,11 +35,14 @@ INDEX = OUT / "sweep_index.jsonl"
 
 # approved matrix: condition -> list of (models, repeats)
 MATRIX = {
-    "source-agentic":   [(LOCAL,3),(CHEAP,3),(FRONTIER,1)],
-    "crash-given":      [(LOCAL,3),(CHEAP,3)],
-    "triage-hypothesis":[(LOCAL,3),(CHEAP,3)],
-    "input-drafting":   [(LOCAL,3),(CHEAP,3)],
-    "source-one-shot":  [(LOCAL,3),(CHEAP,3)],
+    # Uniform 3-repeat grid across all models. The fixed dedup skips cells already
+    # run (cheap+local on every condition; frontier C1 rep 1), so a resume runs
+    # only the frontier gaps on crash/triage/one-shot/input + frontier C1 reps 2-3.
+    "source-agentic":   [(LOCAL,3),(CHEAP,3),(FRONTIER,3)],
+    "crash-given":      [(LOCAL,3),(CHEAP,3),(FRONTIER,3)],
+    "triage-hypothesis":[(LOCAL,3),(CHEAP,3),(FRONTIER,3)],
+    "input-drafting":   [(LOCAL,3),(CHEAP,3),(FRONTIER,3)],
+    "source-one-shot":  [(LOCAL,3),(CHEAP,3),(FRONTIER,3)],
     "recall-probe":     [(LOCAL,1),(CHEAP+FRONTIER,1)],
 }
 # rough $/run for the budget estimate guard (pre-spend), from historical averages

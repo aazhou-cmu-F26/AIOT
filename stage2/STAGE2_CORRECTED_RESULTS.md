@@ -1,4 +1,10 @@
-# Stage 2 — Corrected Results
+# Stage 2 — Corrected Results (interim snapshot)
+
+> **Superseded — read `STAGE2_FINAL_REPORT.md` / `STAGE2_REPORT.html` instead.**
+> This file is the earlier snapshot taken **before** the frontier-model gap-fill,
+> so its crash-given / triage / one-shot numbers reflect the cheap+local models
+> only. The complete, all-11-models figures are in the final report; where this
+> file and the final report disagree, the final report is current.
 
 Generated from `targets/verdicts.csv` (blind pass-1 adjudication; `source=sweep`
 rows are the corrected de-hinted measurements). All localization verdicts use
@@ -105,7 +111,7 @@ than the target.
 ---
 
 ## 5. Spend and provenance
-- Corrected sweep: 234 cells, **$5.91** unique API spend (a dedup bug caused ~$4.28
+- Corrected sweep: 234 cells, **(cost omitted)** unique API spend (a dedup bug caused (cost omitted)
   of redundant re-runs before it was caught and fixed — see `CORRECTIONS_LOG.md`).
 - Every sweep run records its pinned commit, disclosed/withheld context, and
   response status; raw outputs are under `results/sweep/`, verdicts in
